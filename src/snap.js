@@ -14,6 +14,10 @@
 goog.provide('xurban42.js.Snap');
 goog.require('goog.dom');
 
+var doc = document;
+var win = window;
+
+/** @constructor */
 xurban42.js.Snap = function(userOpts) {
     var settings = {
         element: null,
@@ -52,10 +56,10 @@ xurban42.js.Snap = function(userOpts) {
         hasTouch: ('ontouchstart' in doc.documentElement || win.navigator.msPointerEnabled),
         eventType: function(action) {
             var eventTypes = {
-                    down: (utils.hasTouch ? 'touchstart' : 'mousedown'),
-                    move: (utils.hasTouch ? 'touchmove' : 'mousemove'),
-                    up: (utils.hasTouch ? 'touchend' : 'mouseup'),
-                    out: (utils.hasTouch ? 'touchcancel' : 'mouseout')
+                    'down': (utils.hasTouch ? 'touchstart' : 'mousedown'),
+                    'move': (utils.hasTouch ? 'touchmove' : 'mousemove'),
+                    'up': (utils.hasTouch ? 'touchend' : 'mouseup'),
+                    'out': (utils.hasTouch ? 'touchcancel' : 'mouseout')
                 };
             return eventTypes[action];
         },
@@ -474,6 +478,12 @@ xurban42.js.Snap = function(userOpts) {
             action.drag.listen();
         }
     };
+    this.utils = utils;
+    this.cache = cache;
+    this.action = action;
+    this.settings = settings;
+    this.eventList = eventList;
+    
     init(userOpts);
 };
 
@@ -481,85 +491,96 @@ xurban42.js.Snap = function(userOpts) {
  * Public 
  */
 xurban42.js.Snap.prototype.open = function(side) {
-    utils.dispatchEvent('open');
-    utils.klass.remove(doc.body, 'snapjs-expand-left');
-    utils.klass.remove(doc.body, 'snapjs-expand-right');
+    this.utils.dispatchEvent('open');
+    this.utils.klass.remove(doc.body, 'snapjs-expand-left');
+    this.utils.klass.remove(doc.body, 'snapjs-expand-right');
 
     if (side === 'left') {
-        cache.simpleStates.opening = 'left';
-        cache.simpleStates.towards = 'right';
-        utils.klass.add(doc.body, 'snapjs-left');
-        utils.klass.remove(doc.body, 'snapjs-right');
-        action.translate.easeTo(settings.maxPosition);
+        this.cache.simpleStates.opening = 'left';
+        this.cache.simpleStates.towards = 'right';
+        this.utils.klass.add(doc.body, 'snapjs-left');
+        this.utils.klass.remove(doc.body, 'snapjs-right');
+        this.action.translate.easeTo(this.settings.maxPosition);
     } else if (side === 'right') {
-        cache.simpleStates.opening = 'right';
-        cache.simpleStates.towards = 'left';
-        utils.klass.remove(doc.body, 'snapjs-left');
-        utils.klass.add(doc.body, 'snapjs-right');
-        action.translate.easeTo(settings.minPosition);
+        this.cache.simpleStates.opening = 'right';
+        this.cache.simpleStates.towards = 'left';
+        this.utils.klass.remove(doc.body, 'snapjs-left');
+        this.utils.klass.add(doc.body, 'snapjs-right');
+        this.action.translate.easeTo(this.settings.minPosition);
     }
 };
 
 xurban42.js.Snap.prototype.close = function() {
-    utils.dispatchEvent('close');
-    action.translate.easeTo(0);
+    this.utils.dispatchEvent('close');
+    this.action.translate.easeTo(0);
 };
 
 xurban42.js.Snap.prototype.expand = function(side){
     var to = win.innerWidth || doc.documentElement.clientWidth;
 
     if(side==='left'){
-        utils.dispatchEvent('expandLeft');
-        utils.klass.add(doc.body, 'snapjs-expand-left');
-        utils.klass.remove(doc.body, 'snapjs-expand-right');
+        this.utils.dispatchEvent('expandLeft');
+        this.utils.klass.add(doc.body, 'snapjs-expand-left');
+        this.utils.klass.remove(doc.body, 'snapjs-expand-right');
     } else {
-        utils.dispatchEvent('expandRight');
-        utils.klass.add(doc.body, 'snapjs-expand-right');
-        utils.klass.remove(doc.body, 'snapjs-expand-left');
+        this.utils.dispatchEvent('expandRight');
+        this.utils.klass.add(doc.body, 'snapjs-expand-right');
+        this.utils.klass.remove(doc.body, 'snapjs-expand-left');
         to *= -1;
     }
-    action.translate.easeTo(to);
+    this.action.translate.easeTo(to);
 };
 
 xurban42.js.Snap.prototype.on = function(evt, fn) {
-    eventList[evt] = fn;
+    this.eventList[evt] = fn;
     return this;
 };
 
 xurban42.js.Snap.prototype.off = function(evt) {
-    if (eventList[evt]) {
-        eventList[evt] = false;
+    if (this.eventList[evt]) {
+        this.eventList[evt] = false;
     }
 };
 
 xurban42.js.Snap.prototype.enable = function() {
-    utils.dispatchEvent('enable');
-    action.drag.listen();
+    this.utils.dispatchEvent('enable');
+    this.action.drag.listen();
 };
 
 xurban42.js.Snap.prototype.disable = function() {
-    utils.dispatchEvent('disable');
-    action.drag.stopListening();
+    this.utils.dispatchEvent('disable');
+    this.action.drag.stopListening();
 };
 
 xurban42.js.Snap.prototype.settings = function(opts){
-    utils.deepExtend(settings, opts);
+    this.utils.deepExtend(this.settings, opts);
 };
 
 xurban42.js.Snap.prototype.state = function() {
     var state,
-        fromLeft = action.translate.get.matrix(4);
-    if (fromLeft === settings.maxPosition) {
+        fromLeft = this.action.translate.get.matrix(4);
+    if (fromLeft === this.settings.maxPosition) {
         state = 'left';
-    } else if (fromLeft === settings.minPosition) {
+    } else if (fromLeft === this.settings.minPosition) {
         state = 'right';
     } else {
         state = 'closed';
     }
     return {
         state: state,
-        info: cache.simpleStates
+        info: this.cache.simpleStates
     };
 };
 
 goog.exportSymbol('Snap', xurban42.js.Snap);
+
+goog.exportSymbol('open', xurban42.js.Snap.prototype.open);
+goog.exportSymbol('close', xurban42.js.Snap.prototype.close);
+goog.exportSymbol('expand', xurban42.js.Snap.prototype.expand);
+goog.exportSymbol('on', xurban42.js.Snap.prototype.on);
+goog.exportSymbol('off', xurban42.js.Snap.prototype.off);
+goog.exportSymbol('enable', xurban42.js.Snap.prototype.enable);
+goog.exportSymbol('disable', xurban42.js.Snap.prototype.disable);
+goog.exportSymbol('settings', xurban42.js.Snap.prototype.settings);
+goog.exportSymbol('state', xurban42.js.Snap.prototype.state);
+

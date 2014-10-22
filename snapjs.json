@@ -1,5 +1,5 @@
 {
-  "id": "iframes-example",
+  "id": "snapjs",
 
   "pretty-print": true,
   "debug": true,
@@ -9,11 +9,26 @@
     "goog.DEBUG": false
   },
 
-  "inputs": "src/main.js",
+  "inputs": "src/snap.js",
   "paths": [
-    "src",
-    "templates"
+    "src"
   ],
+
+  "checks": {
+    // Unfortunately, the Closure Library violates these in many places.
+    // "accessControls": "ERROR",
+    // "visibility": "ERROR"
+
+    "checkTypes": "ERROR",
+    "checkRegExp": "ERROR",
+    "checkVars": "ERROR",
+    "deprecated": "ERROR",
+    "fileoverviewTags": "ERROR",
+    "invalidCasts": "ERROR",
+    "missingProperties": "ERROR",
+    //"nonStandardJsDocs": "ERROR",
+    "undefinedVars": "ERROR"
+  },
 
   "mode": "ADVANCED", // "SIMPLE"
   "level": "DEFAULT" // "VERBOSE"

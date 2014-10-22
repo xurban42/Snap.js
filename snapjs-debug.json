@@ -1,5 +1,5 @@
 {
-  "id": "iframes-example",
+  "id": "debug-snapjs",
 
   "pretty-print": true,
   "debug": true,
@@ -9,10 +9,9 @@
     "goog.DEBUG": true
   },
 
-  "inputs": "src/main.js",
+  "inputs": "src/snap.js",
   "paths": [
-    "src",
-    "templates"
+    "src"
   ],
 
   "mode": "ADVANCED", // "SIMPLE"
