@@ -1,5 +1,6 @@
 /*
-* Snap.js like component to Google Closure Tools
+* Snap.js like component to Google Closure Tools.
+* (for more info check: http://github.com/xurban42/Snap.js/)
 *
 * Copyright 2014, Martin Urban
 * Released under the MIT Licence
@@ -17,26 +18,28 @@ goog.require('goog.dom');
 var doc = document;
 var win = window;
 
-/** @constructor */
+/** @constructor
+ * @param {Object} userOpts
+ */
 xurban42.js.Snap = function(userOpts) {
     var settings = {
-        element: null,
-        dragger: null,
-        disable: 'none',
-        addBodyClasses: true,
-        hyperextensible: true,
-        resistance: 0.5,
-        flickThreshold: 50,
-        transitionSpeed: 0.3,
-        easing: 'ease',
-        maxPosition: 266,
-        minPosition: -266,
-        tapToClose: true,
-        touchToDrag: true,
-        slideIntent: 40, // degrees
-        minDragDistance: 5
-    },
-    cache = {
+        'element': null,
+        'dragger': null,
+        'disable': 'none',
+        'addBodyClasses': true,
+        'hyperextensible': true,
+        'resistance': 0.5,
+        'flickThreshold': 50,
+        'transitionSpeed': 0.3,
+        'easing': 'ease',
+        'maxPosition': 266,
+        'minPosition': -266,
+        'tapToClose': true,
+        'touchToDrag': true,
+        'slideIntent': 40, // degrees
+        'minDragDistance': 5
+    };
+    var cache = {
         simpleStates: {
             opening: null,
             towards: null,
@@ -71,12 +74,12 @@ xurban42.js.Snap = function(userOpts) {
                 return (el.className).indexOf(name) !== -1;
             },
             add: function(el, name){
-                if(!utils.klass.has(el, name) && settings.addBodyClasses){
+                if(!utils.klass.has(el, name) && settings['addBodyClasses']){
                     el.className += " "+name;
                 }
             },
             remove: function(el, name){
-                if(settings.addBodyClasses){
+                if(settings['addBodyClasses']){
                     el.className = (el.className).replace(name, "").replace(/^\s+|\s+$/g, '');
                 }
             }
@@ -100,7 +103,7 @@ xurban42.js.Snap = function(userOpts) {
             return (cache.vendor==='Moz' || cache.vendor==='ms') ? 'transitionend' : cache.vendor+'TransitionEnd';
         },
         canTransform: function(){
-            return typeof settings.element.style[cache.vendor+'Transform'] !== 'undefined';
+            return typeof settings['element'].style[cache.vendor+'Transform'] !== 'undefined';
         },
         deepExtend: function(destination, source) {
             var property;
@@ -170,9 +173,9 @@ xurban42.js.Snap = function(userOpts) {
                 matrix: function(index) {
 
                     if( !utils.canTransform() ){
-                        return parseInt(settings.element.style.left, 10);
+                        return parseInt(settings['element'].style.left, 10);
                     } else {
-                        var matrix = win.getComputedStyle(settings.element)[cache.vendor+'Transform'].match(/\((.*)\)/),
+                        var matrix = win.getComputedStyle(settings['element'])[cache.vendor+'Transform'].match(/\((.*)\)/),
                             ieOffset = 8;
                         if (matrix) {
                             matrix = matrix[1].split(',');
@@ -186,7 +189,7 @@ xurban42.js.Snap = function(userOpts) {
                 }
             },
             easeCallback: function(){
-                settings.element.style[cache.vendor+'Transition'] = '';
+                settings['element'].style[cache.vendor+'Transition'] = '';
                 cache.translation = action.translate.get.matrix(4);
                 cache.easing = false;
                 clearInterval(cache.animatingInterval);
@@ -197,7 +200,7 @@ xurban42.js.Snap = function(userOpts) {
                 }
 
                 utils.dispatchEvent('animated');
-                utils.events.removeEvent(settings.element, utils.transitionCallback(), action.translate.easeCallback);
+                utils.events.removeEvent(settings['element'], utils.transitionCallback(), action.translate.easeCallback);
             },
             easeTo: function(n) {
 
@@ -208,29 +211,29 @@ xurban42.js.Snap = function(userOpts) {
                     cache.easing = true;
                     cache.easingTo = n;
 
-                    settings.element.style[cache.vendor+'Transition'] = 'all ' + settings.transitionSpeed + 's ' + settings.easing;
+                    settings['element'].style[cache.vendor+'Transition'] = 'all ' + settings['transitionSpeed'] + 's ' + settings['easing'];
 
                     cache.animatingInterval = setInterval(function() {
                         utils.dispatchEvent('animating');
                     }, 1);
                     
-                    utils.events.addEvent(settings.element, utils.transitionCallback(), action.translate.easeCallback);
+                    utils.events.addEvent(settings['element'], utils.transitionCallback(), action.translate.easeCallback);
                     action.translate.x(n);
                 }
                 if(n===0){
-                       settings.element.style[cache.vendor+'Transform'] = '';
+                       settings['element'].style[cache.vendor+'Transform'] = '';
                    }
             },
             x: function(n) {
-                if( (settings.disable==='left' && n>0) ||
-                    (settings.disable==='right' && n<0)
+                if( (settings['disable']==='left' && n>0) ||
+                    (settings['disable']==='right' && n<0)
                 ){ return; }
                 
-                if( !settings.hyperextensible ){
-                    if( n===settings.maxPosition || n>settings.maxPosition ){
-                        n=settings.maxPosition;
-                    } else if( n===settings.minPosition || n<settings.minPosition ){
-                        n=settings.minPosition;
+                if( !settings['hyperextensible'] ){
+                    if( n===settings['maxPosition'] || n>settings['maxPosition'] ){
+                        n=settings['maxPosition'];
+                    } else if( n===settings['minPosition'] || n<settings['minPosition'] ){
+                        n=settings['minPosition'];
                     }
                 }
                 
@@ -241,12 +244,12 @@ xurban42.js.Snap = function(userOpts) {
 
                 if( utils.canTransform() ){
                     var theTranslate = 'translate3d(' + n + 'px, 0,0)';
-                    settings.element.style[cache.vendor+'Transform'] = theTranslate;
+                    settings['element'].style[cache.vendor+'Transform'] = theTranslate;
                 } else {
-                    settings.element.style.width = (win.innerWidth || doc.documentElement.clientWidth)+'px';
+                    settings['element'].style.width = (win.innerWidth || doc.documentElement.clientWidth)+'px';
 
-                    settings.element.style.left = n+'px';
-                    settings.element.style.right = '';
+                    settings['element'].style.left = n+'px';
+                    settings['element'].style.right = '';
                 }
             }
         },
@@ -254,14 +257,16 @@ xurban42.js.Snap = function(userOpts) {
             listen: function() {
                 cache.translation = 0;
                 cache.easing = false;
-                utils.events.addEvent(settings.element, utils.eventType('down'), action.drag.startDrag);
-                utils.events.addEvent(settings.element, utils.eventType('move'), action.drag.dragging);
-                utils.events.addEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
+                utils.events.addEvent(settings['element'], utils.eventType('down'), action.drag.startDrag);
+                utils.events.addEvent(settings['element'], utils.eventType('move'), action.drag.dragging);
+                utils.events.addEvent(settings['element'], utils.eventType('up'), action.drag.endDrag);
+                utils.events.addEvent(settings['element'], utils.eventType('out'), action.drag.endDrag);
             },
             stopListening: function() {
-                utils.events.removeEvent(settings.element, utils.eventType('down'), action.drag.startDrag);
-                utils.events.removeEvent(settings.element, utils.eventType('move'), action.drag.dragging);
-                utils.events.removeEvent(settings.element, utils.eventType('up'), action.drag.endDrag);
+                utils.events.removeEvent(settings['element'], utils.eventType('down'), action.drag.startDrag);
+                utils.events.removeEvent(settings['element'], utils.eventType('move'), action.drag.dragging);
+                utils.events.removeEvent(settings['element'], utils.eventType('up'), action.drag.endDrag);
+                utils.events.removeEvent(settings['element'], utils.eventType('out'), action.drag.endDrag);
             },
             startDrag: function(e) {
                 // No drag on ignored elements
@@ -274,20 +279,20 @@ xurban42.js.Snap = function(userOpts) {
                 }
                 
                 
-                if(settings.dragger){
-                    var dragParent = utils.parentUntil(target, settings.dragger);
+                if(settings['dragger']){
+                    var dragParent = utils.parentUntil(target, settings['dragger']);
                     
                     // Only use dragger if we're in a closed state
                     if( !dragParent && 
-                        (cache.translation !== settings.minPosition && 
-                        cache.translation !== settings.maxPosition
+                        (cache.translation !== settings['minPosition'] && 
+                        cache.translation !== settings['maxPosition']
                     )){
                         return;
                     }
                 }
                 
                 utils.dispatchEvent('start');
-                settings.element.style[cache.vendor+'Transition'] = '';
+                settings['element'].style[cache.vendor+'Transition'] = '';
                 cache.isDragging = true;
                 cache.hasIntent = null;
                 cache.intentChecked = false;
@@ -314,7 +319,7 @@ xurban42.js.Snap = function(userOpts) {
                 };
             },
             dragging: function(e) {
-                if (cache.isDragging && settings.touchToDrag) {
+                if (cache.isDragging && settings['touchToDrag']) {
 
                     var thePageX = utils.page('X', e),
                         thePageY = utils.page('Y', e),
@@ -330,7 +335,7 @@ xurban42.js.Snap = function(userOpts) {
                         return;
                     }
 
-                    if(settings.addBodyClasses){
+                    if(settings['addBodyClasses']){
                         if((absoluteTranslation)>0){
                             utils.klass.add(doc.body, 'snapjs-left');
                             utils.klass.remove(doc.body, 'snapjs-right');
@@ -342,8 +347,8 @@ xurban42.js.Snap = function(userOpts) {
 
                     if (cache.hasIntent === false || cache.hasIntent === null) {
                         var deg = utils.angleOfDrag(thePageX, thePageY),
-                            inRightRange = (deg >= 0 && deg <= settings.slideIntent) || (deg <= 360 && deg > (360 - settings.slideIntent)),
-                            inLeftRange = (deg >= 180 && deg <= (180 + settings.slideIntent)) || (deg <= 180 && deg >= (180 - settings.slideIntent));
+                            inRightRange = (deg >= 0 && deg <= settings['slideIntent']) || (deg <= 360 && deg > (360 - settings['slideIntent'])),
+                            inLeftRange = (deg >= 180 && deg <= (180 + settings['slideIntent'])) || (deg <= 180 && deg >= (180 - settings['slideIntent']));
                         if (!inLeftRange && !inRightRange) {
                             cache.hasIntent = false;
                         } else {
@@ -353,7 +358,7 @@ xurban42.js.Snap = function(userOpts) {
                     }
 
                     if (
-                        (settings.minDragDistance>=Math.abs(thePageX-cache.startDragX)) || // Has user met minimum drag distance?
+                        (settings['minDragDistance']>=Math.abs(thePageX-cache.startDragX)) || // Has user met minimum drag distance?
                         (cache.hasIntent === false)
                     ) {
                         return;
@@ -379,40 +384,40 @@ xurban42.js.Snap = function(userOpts) {
                     }
                     if (openingLeft) {
                         // Pulling too far to the right
-                        if (settings.maxPosition < absoluteTranslation) {
-                            diff = (absoluteTranslation - settings.maxPosition) * settings.resistance;
+                        if (settings['maxPosition'] < absoluteTranslation) {
+                            diff = (absoluteTranslation - settings['maxPosition']) * settings['resistance'];
                             translateTo = whileDragX - diff;
                         }
                         cache.simpleStates = {
                             opening: 'left',
                             towards: cache.dragWatchers.state,
-                            hyperExtending: settings.maxPosition < absoluteTranslation,
-                            halfway: absoluteTranslation > (settings.maxPosition / 2),
-                            flick: Math.abs(cache.dragWatchers.current - cache.dragWatchers.hold) > settings.flickThreshold,
+                            hyperExtending: settings['maxPosition'] < absoluteTranslation,
+                            halfway: absoluteTranslation > (settings['maxPosition'] / 2),
+                            flick: Math.abs(cache.dragWatchers.current - cache.dragWatchers.hold) > settings['flickThreshold'],
                             translation: {
                                 absolute: absoluteTranslation,
                                 relative: whileDragX,
                                 sinceDirectionChange: (cache.dragWatchers.current - cache.dragWatchers.hold),
-                                percentage: (absoluteTranslation/settings.maxPosition)*100
+                                percentage: (absoluteTranslation/settings['maxPosition'])*100
                             }
                         };
                     } else {
                         // Pulling too far to the left
-                        if (settings.minPosition > absoluteTranslation) {
-                            diff = (absoluteTranslation - settings.minPosition) * settings.resistance;
+                        if (settings['minPosition'] > absoluteTranslation) {
+                            diff = (absoluteTranslation - settings['minPosition']) * settings['resistance'];
                             translateTo = whileDragX - diff;
                         }
                         cache.simpleStates = {
                             opening: 'right',
                             towards: cache.dragWatchers.state,
-                            hyperExtending: settings.minPosition > absoluteTranslation,
-                            halfway: absoluteTranslation < (settings.minPosition / 2),
-                            flick: Math.abs(cache.dragWatchers.current - cache.dragWatchers.hold) > settings.flickThreshold,
+                            hyperExtending: settings['minPosition'] > absoluteTranslation,
+                            halfway: absoluteTranslation < (settings['minPosition'] / 2),
+                            flick: Math.abs(cache.dragWatchers.current - cache.dragWatchers.hold) > settings['flickThreshold'],
                             translation: {
                                 absolute: absoluteTranslation,
                                 relative: whileDragX,
                                 sinceDirectionChange: (cache.dragWatchers.current - cache.dragWatchers.hold),
-                                percentage: (absoluteTranslation/settings.minPosition)*100
+                                percentage: (absoluteTranslation/settings['minPosition'])*100
                             }
                         };
                     }
@@ -425,7 +430,7 @@ xurban42.js.Snap = function(userOpts) {
                     var translated = action.translate.get.matrix(4);
 
                     // Tap Close
-                    if (cache.dragWatchers.current === 0 && translated !== 0 && settings.tapToClose) {
+                    if (cache.dragWatchers.current === 0 && translated !== 0 && settings['tapToClose']) {
                         utils.dispatchEvent('close');
                         utils.events.prevent(e);
                         action.translate.easeTo(0);
@@ -444,7 +449,7 @@ xurban42.js.Snap = function(userOpts) {
                                 (cache.simpleStates.flick && cache.simpleStates.towards === 'right') || // Flicking Open OR
                                 (cache.simpleStates.halfway || cache.simpleStates.hyperExtending) // At least halfway open OR hyperextending
                             ) {
-                                action.translate.easeTo(settings.maxPosition); // Open Left
+                                action.translate.easeTo(settings['maxPosition']); // Open Left
                             }
                         } else {
                             action.translate.easeTo(0); // Close Left
@@ -459,7 +464,7 @@ xurban42.js.Snap = function(userOpts) {
                                 (cache.simpleStates.flick && cache.simpleStates.towards === 'left') || // Flicking Open OR
                                 (cache.simpleStates.halfway || cache.simpleStates.hyperExtending) // At least halfway open OR hyperextending
                             ) {
-                                action.translate.easeTo(settings.minPosition); // Open Right
+                                action.translate.easeTo(settings['minPosition']); // Open Right
                             }
                         } else {
                             action.translate.easeTo(0); // Close Right
@@ -478,11 +483,11 @@ xurban42.js.Snap = function(userOpts) {
             action.drag.listen();
         }
     };
-    this.utils = utils;
-    this.cache = cache;
-    this.action = action;
-    this.settings = settings;
-    this.eventList = eventList;
+    this._utils = utils;
+    this._cache = cache;
+    this._action = action;
+    this._settings = settings;
+    this._eventList = eventList;
     
     init(userOpts);
 };
@@ -490,85 +495,106 @@ xurban42.js.Snap = function(userOpts) {
 /*
  * Public 
  */
+
+/**
+ * @param {string} side
+ */
 xurban42.js.Snap.prototype.open = function(side) {
-    this.utils.dispatchEvent('open');
-    this.utils.klass.remove(doc.body, 'snapjs-expand-left');
-    this.utils.klass.remove(doc.body, 'snapjs-expand-right');
+    this._utils.dispatchEvent('open');
+    this._utils.klass.remove(doc.body, 'snapjs-expand-left');
+    this._utils.klass.remove(doc.body, 'snapjs-expand-right');
 
     if (side === 'left') {
-        this.cache.simpleStates.opening = 'left';
-        this.cache.simpleStates.towards = 'right';
-        this.utils.klass.add(doc.body, 'snapjs-left');
-        this.utils.klass.remove(doc.body, 'snapjs-right');
-        this.action.translate.easeTo(this.settings.maxPosition);
+        this._cache.simpleStates.opening = 'left';
+        this._cache.simpleStates.towards = 'right';
+        this._utils.klass.add(doc.body, 'snapjs-left');
+        this._utils.klass.remove(doc.body, 'snapjs-right');
+        this._action.translate.easeTo(this._settings['maxPosition']);
     } else if (side === 'right') {
-        this.cache.simpleStates.opening = 'right';
-        this.cache.simpleStates.towards = 'left';
-        this.utils.klass.remove(doc.body, 'snapjs-left');
-        this.utils.klass.add(doc.body, 'snapjs-right');
-        this.action.translate.easeTo(this.settings.minPosition);
+        this._cache.simpleStates.opening = 'right';
+        this._cache.simpleStates.towards = 'left';
+        this._utils.klass.remove(doc.body, 'snapjs-left');
+        this._utils.klass.add(doc.body, 'snapjs-right');
+        this._action.translate.easeTo(this._settings['minPosition']);
     }
 };
 
 xurban42.js.Snap.prototype.close = function() {
-    this.utils.dispatchEvent('close');
-    this.action.translate.easeTo(0);
+    this._utils.dispatchEvent('close');
+    this._action.translate.easeTo(0);
 };
 
+/**
+ * @param {string} side
+ */
 xurban42.js.Snap.prototype.expand = function(side){
     var to = win.innerWidth || doc.documentElement.clientWidth;
 
     if(side==='left'){
-        this.utils.dispatchEvent('expandLeft');
-        this.utils.klass.add(doc.body, 'snapjs-expand-left');
-        this.utils.klass.remove(doc.body, 'snapjs-expand-right');
+        this._utils.dispatchEvent('expandLeft');
+        this._utils.klass.add(doc.body, 'snapjs-expand-left');
+        this._utils.klass.remove(doc.body, 'snapjs-expand-right');
     } else {
-        this.utils.dispatchEvent('expandRight');
-        this.utils.klass.add(doc.body, 'snapjs-expand-right');
-        this.utils.klass.remove(doc.body, 'snapjs-expand-left');
+        this._utils.dispatchEvent('expandRight');
+        this._utils.klass.add(doc.body, 'snapjs-expand-right');
+        this._utils.klass.remove(doc.body, 'snapjs-expand-left');
         to *= -1;
     }
-    this.action.translate.easeTo(to);
+    this._action.translate.easeTo(to);
 };
 
+/**
+ * @param {string} evt
+ * @param {function()} fn
+ * @return {Object}
+ */
 xurban42.js.Snap.prototype.on = function(evt, fn) {
-    this.eventList[evt] = fn;
+    this._eventList[evt] = fn;
     return this;
 };
 
+/**
+ * @param {string} evt
+ */
 xurban42.js.Snap.prototype.off = function(evt) {
-    if (this.eventList[evt]) {
-        this.eventList[evt] = false;
+    if (this._eventList[evt]) {
+        this._eventList[evt] = false;
     }
 };
 
 xurban42.js.Snap.prototype.enable = function() {
-    this.utils.dispatchEvent('enable');
-    this.action.drag.listen();
+    this._utils.dispatchEvent('enable');
+    this._action.drag.listen();
 };
 
 xurban42.js.Snap.prototype.disable = function() {
-    this.utils.dispatchEvent('disable');
-    this.action.drag.stopListening();
+    this._utils.dispatchEvent('disable');
+    this._action.drag.stopListening();
 };
 
+/**
+ * @param {Object} opts
+ */
 xurban42.js.Snap.prototype.settings = function(opts){
-    this.utils.deepExtend(this.settings, opts);
+    this._utils.deepExtend(this._settings, opts);
 };
 
+/**
+ * @return {Object}
+ */
 xurban42.js.Snap.prototype.state = function() {
     var state,
-        fromLeft = this.action.translate.get.matrix(4);
-    if (fromLeft === this.settings.maxPosition) {
+        fromLeft = this._action.translate.get.matrix(4);
+    if (fromLeft === this._settings['maxPosition']) {
         state = 'left';
-    } else if (fromLeft === this.settings.minPosition) {
+    } else if (fromLeft === this._settings['minPosition']) {
         state = 'right';
     } else {
         state = 'closed';
     }
     return {
         state: state,
-        info: this.cache.simpleStates
+        info: this._cache.simpleStates
     };
 };
 

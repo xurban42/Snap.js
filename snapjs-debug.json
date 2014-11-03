@@ -1,5 +1,6 @@
 {
   "id": "debug-snapjs",
+  "inherits": "snapjs.json",
 
   "pretty-print": true,
   "debug": true,
@@ -7,13 +8,5 @@
 
   "define": {
     "goog.DEBUG": true
-  },
-
-  "inputs": "src/snap.js",
-  "paths": [
-    "src"
-  ],
-
-  "mode": "ADVANCED", // "SIMPLE"
-  "level": "DEFAULT" // "VERBOSE"
+  }
 }
