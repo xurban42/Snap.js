@@ -10,6 +10,15 @@
     margin:0;
     padding:0;
   }
+  #touchpad {
+    width: 360px;
+    left: 50%;
+    margin-left: -180px;
+    bottom:0;
+    height: 50px;
+    position: absolute;
+    background-color: pink;
+  }
   #display {
     position: absolute;
     left: 50%;
@@ -47,19 +56,38 @@
   #iframe {
     width:340px; 
     height:480px; 
+    pointer-events: none;
   }
   </style>
   <script type="text/javascript" src="http://localhost:9810/compile?id=debug-snapjs"></script>
+  <script>
+function clickTo(doc, x,y) {
+    var ev = doc.createEvent("MouseEvent");
+    var el = doc.elementFromPoint(x,y);
+    ev.initMouseEvent(
+        "click",
+        true /* bubble */, true /* cancelable */,
+        window, null,
+        x, y, 0, 0, /* coordinates */
+        false, false, false, false, /* modifier keys */
+        0 /*left*/, null
+    );
+    el.dispatchEvent(ev);
+}
+</script>
 </head>
 <body>
   <div id="display">
-    <div id="slider">
+    <div id="slider" >
       <div id="blue" class="view"> &lt;----- V1 -----&gt; </div>
       <div id="red" class="view"> &lt;----- V2 -----&gt;</div>
-      <div id="green" class="view">&lt;----- V3 -----&gt;<iframe onclick="alert('iframe');" id="iframe" src="frame.html"></iframe></div>
+      <div id="green" onclick="console.log(document.getElementById('iframe').contentWindow.document.elementFromPoint, event);clickTo(document.getElementById('iframe').contentWindow.document,event.offsetX, event.offsetY);" class="view">&lt;----- V3 -----&gt;
+        <iframe id="iframe" src="frame.html"></iframe></div>
     </div>
   </div>
   <script>
+  
+setTimeout(function() {
   settings = {
     element: document.getElementById('slider'),
     dragger: null,
@@ -77,9 +105,10 @@
     slideIntent: 40,
     minDragDistance: 5
 }
-  var snapper = new Snap(settings);
-  snapper.open('right');
-  snapper.close();
+  new Snap(settings);
+}, 200);
+
+
   </script>
 </body>
 </html>

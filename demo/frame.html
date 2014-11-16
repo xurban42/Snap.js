@@ -19,22 +19,10 @@
 </head>
 <body>
 <script>
-function InitMouseDown (event) {
-          if (event.initMouseEvent) {     // all browsers except IE before version 9
-            console.log(event.clientX);
-              var mousedownEvent = document.createEvent ("MouseEvent");
-              mousedownEvent.initMouseEvent ("mousedown", true, true, window, 0, 
-                                          event.screenX+100, event.screenY+100, event.clientX+100, event.clientY+100, 
-                                          event.ctrlKey, event.altKey, event.shiftKey, event.metaKey, 
-                                          0, null);
-              event.target.dispatchEvent (mousedownEvent);
-          }
-        }
-  console.log(window.top.document);
 </script>
-<div id="frame" onmouseover="InitMouseDown(event);">
+<div id="frame">
   (iframe)<br/>
-  <button id="btn" onmouseover="InitMouseDown(event);" onmousedown="alert(event.clientX)">CLICK HERE!</button>
+  <button id="btn" onclick="console.log(event); alert('click');">CLICK HERE!</button>
 </div>
 </body>
 </html>
