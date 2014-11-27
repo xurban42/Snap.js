@@ -1,5 +1,5 @@
 {
-  "id": "snapjs",
+  "id": "slider",
 
   "pretty-print": true,
   "debug": true,
@@ -9,7 +9,7 @@
     "goog.DEBUG": false
   },
 
-  "inputs": "src/snap.js",
+  "inputs": "src/slider.js",
   "paths": [
     "src"
   ],

@@ -1,6 +1,6 @@
 {
-  "id": "debug-snapjs",
-  "inherits": "snapjs.json",
+  "id": "debug-sliderjs",
+  "inherits": "sliderjs.json",
 
   "pretty-print": true,
   "debug": true,

@@ -32,8 +32,8 @@ xurban42.js.Snap = function(userOpts) {
         'flickThreshold': 50,
         'transitionSpeed': 0.3,
         'easing': 'ease',
-        'maxPosition': 266,
-        'minPosition': -266,
+        'maxPosition': 0,
+        'minPosition': -0,
         'tapToClose': true,
         'touchToDrag': true,
         'slideIntent': 40, // degrees
@@ -56,6 +56,7 @@ xurban42.js.Snap = function(userOpts) {
     },
     eventList = {},
     utils = {
+        sideOpened: '',
         hasTouch: ('ontouchstart' in doc.documentElement || win.navigator.msPointerEnabled),
         eventType: function(action) {
             var eventTypes = {
@@ -197,9 +198,10 @@ xurban42.js.Snap = function(userOpts) {
                 if(cache.easingTo===0){
                     utils.klass.remove(doc.body, 'snapjs-right');
                     utils.klass.remove(doc.body, 'snapjs-left');
+                    utils.sideOpened = '';
                 }
-
                 utils.dispatchEvent('animated');
+                utils.dispatchEvent('animated'+utils.sideOpened);
                 utils.events.removeEvent(settings['element'], utils.transitionCallback(), action.translate.easeCallback);
             },
             easeTo: function(n) {
@@ -223,6 +225,29 @@ xurban42.js.Snap = function(userOpts) {
                 if(n===0){
                        settings['element'].style[cache.vendor+'Transform'] = '';
                    }
+            },
+            jumpTo: function(n) {
+
+                if( !utils.canTransform() ){
+                    cache.translation = n;
+                    action.translate.x(n);
+                } else {
+                    cache.easing = true;
+                    cache.easingTo = n;
+
+                    //settings['element'].style[cache.vendor+'Transition'] = 'all ' + settings['transitionSpeed'] + 's ' + settings['easing'];
+
+                    /*cache.animatingInterval = setInterval(function() {
+                        utils.dispatchEvent('animating');
+                    }, 1);*/
+
+                    action.translate.x(n);
+                    action.translate.easeCallback();
+                    
+                }
+                if(n===0){
+                   settings['element'].style[cache.vendor+'Transform'] = '';
+               }
             },
             x: function(n) {
                 if( (settings['disable']==='left' && n>0) ||
@@ -338,10 +363,12 @@ xurban42.js.Snap = function(userOpts) {
                     if(settings['addBodyClasses']){
                         if((absoluteTranslation)>0){
                             utils.klass.add(doc.body, 'snapjs-left');
+                            utils.sideOpened = 'left';
                             utils.klass.remove(doc.body, 'snapjs-right');
                         } else if((absoluteTranslation)<0){
                             utils.klass.add(doc.body, 'snapjs-right');
                             utils.klass.remove(doc.body, 'snapjs-left');
+                            utils.sideOpened = 'right';
                         }
                     }
 
@@ -508,20 +535,29 @@ xurban42.js.Snap.prototype.open = function(side) {
         this._cache.simpleStates.opening = 'left';
         this._cache.simpleStates.towards = 'right';
         this._utils.klass.add(doc.body, 'snapjs-left');
+        this._utils.sideOpened = 'left';
         this._utils.klass.remove(doc.body, 'snapjs-right');
         this._action.translate.easeTo(this._settings['maxPosition']);
+        this._utils.dispatchEvent('openedLeft');
     } else if (side === 'right') {
         this._cache.simpleStates.opening = 'right';
         this._cache.simpleStates.towards = 'left';
         this._utils.klass.remove(doc.body, 'snapjs-left');
+        this._utils.sideOpened = 'right';
         this._utils.klass.add(doc.body, 'snapjs-right');
         this._action.translate.easeTo(this._settings['minPosition']);
+        this._utils.dispatchEvent('openedRight');
     }
 };
 
 xurban42.js.Snap.prototype.close = function() {
     this._utils.dispatchEvent('close');
     this._action.translate.easeTo(0);
+};
+
+xurban42.js.Snap.prototype.closeWithoutAnimation = function() {
+    this._utils.dispatchEvent('close');
+    this._action.translate.jumpTo(0);
 };
 
 /**
@@ -580,6 +616,14 @@ xurban42.js.Snap.prototype.settings = function(opts){
 };
 
 /**
+ * @param {string} property
+ * @return {Object}
+ */
+xurban42.js.Snap.prototype.getSettingProp = function(property){
+    return this._settings[property];
+};
+
+/**
  * @return {Object}
  */
 xurban42.js.Snap.prototype.state = function() {
@@ -600,13 +644,14 @@ xurban42.js.Snap.prototype.state = function() {
 
 goog.exportSymbol('Snap', xurban42.js.Snap);
 
-goog.exportSymbol('open', xurban42.js.Snap.prototype.open);
-goog.exportSymbol('close', xurban42.js.Snap.prototype.close);
-goog.exportSymbol('expand', xurban42.js.Snap.prototype.expand);
-goog.exportSymbol('on', xurban42.js.Snap.prototype.on);
-goog.exportSymbol('off', xurban42.js.Snap.prototype.off);
-goog.exportSymbol('enable', xurban42.js.Snap.prototype.enable);
-goog.exportSymbol('disable', xurban42.js.Snap.prototype.disable);
-goog.exportSymbol('settings', xurban42.js.Snap.prototype.settings);
-goog.exportSymbol('state', xurban42.js.Snap.prototype.state);
+goog.exportProperty(xurban42.js.Snap.prototype, 'open', xurban42.js.Snap.prototype.open);
+goog.exportProperty(xurban42.js.Snap.prototype, 'close', xurban42.js.Snap.prototype.close);
+goog.exportProperty(xurban42.js.Snap.prototype, 'expand', xurban42.js.Snap.prototype.expand);
+goog.exportProperty(xurban42.js.Snap.prototype, 'on', xurban42.js.Snap.prototype.on);
+goog.exportProperty(xurban42.js.Snap.prototype, 'off', xurban42.js.Snap.prototype.off);
+goog.exportProperty(xurban42.js.Snap.prototype, 'enable', xurban42.js.Snap.prototype.enable);
+goog.exportProperty(xurban42.js.Snap.prototype, 'disable', xurban42.js.Snap.prototype.disable);
+goog.exportProperty(xurban42.js.Snap.prototype, 'settings', xurban42.js.Snap.prototype.settings);
+goog.exportProperty(xurban42.js.Snap.prototype, 'getSettingProp', xurban42.js.Snap.prototype.getSettingProp);
+goog.exportProperty(xurban42.js.Snap.prototype, 'state', xurban42.js.Snap.prototype.state);
 
