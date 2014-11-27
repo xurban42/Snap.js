@@ -34,16 +34,22 @@
     height:480px;
     overflow: hidden;
   }
-  #blue {
+  #first {
     background-color: blue;
+    background-image: url('../img/obr1.jpg');
+    background-size: 100% 100%;
   }
 
-  #red {
+  #second {
     background-color: red;
+    background-image: url('../img/obr2.jpg');
+    background-size: 100% 100%;
   }
 
-  #green {
+  #third {
     background-color: green;
+    background-image: url('../img/obr3.jpg');
+    background-size: 100% 100%;
   }
 
   .prev {
@@ -61,14 +67,14 @@
     height: 100%;
   }
   </style>
-  <script type="text/javascript" src="http://localhost:9810/compile?id=debug-sliderjs"></script>
+  <script type="text/javascript" src="../build/slider.js"></script>
 </head>
 <body>
   <div id="display">
     <div id="slider">
-      <div id="blue" class="view prev"><img src='../img/obr1.jpg'/></div>
-      <div id="red" class="view active"><img src='../img/obr2.jpg'></div>
-      <div id="green" class="view next"><img src='../img/obr3.jpg'></div>
+      <div id="first" class="view prev"></div>
+      <div id="second" class="view active"></div>
+      <div id="third" class="view next"></div>
     </div>
   </div>
   <script>
